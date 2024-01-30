@@ -1,0 +1,108 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - 'release/**'
+  pull_request:
+    branches:
+      - main
+      - develop
+      - 'release/**'
+
+env:
+  GH_NPM_TOKEN: ${{ secrets.GH_NPM_TOKEN }}
+  ORDER_PAYMENT_ENGINE_APP_PORT: ${{ secrets.ORDER_PAYMENT_ENGINE_APP_PORT }}
+  CORS_WHITELIST: ${{ secrets.CORS_WHITELIST }}
+  CART_ENDPOINT: ${{secrets.CART_ENDPOINT}}
+  WALLET_ENDPOINT: ${{secrets.WALLET_ENDPOINT}}
+  PAYMENT_ENDPOINT: ${{secrets.PAYMENT_ENDPOINT}}
+  LMS_ENDPOINT: ${{secrets.LMS_ENDPOINT}}
+  ORDER_PAYMENT_ENGINE_DB_HOST: ${{secrets.ORDER_PAYMENT_ENGINE_DB_HOST}}
+  ORDER_PAYMENT_ENGINE_DB_NAME: ${{secrets.ORDER_PAYMENT_ENGINE_DB_NAME}}
+  DB_USERNAME: ${{secrets.DB_USERNAME}}
+  DB_PASSWORD: ${{secrets.DB_PASSWORD}}
+  SENTRY_DSN: ${{secrets.SENTRY_DSN}}
+  JWT_SECRET_KEY: ${{secrets.JWT_SECRET_KEY}}
+  JWT_ACCESS_TOKEN_EXPIRY_IN_SEC: ${{secrets.JWT_ACCESS_TOKEN_EXPIRY_IN_SEC}}
+  NEW_RELIC_LICENSE_KEY: ${{secrets.NEW_RELIC_LICENSE_KEY}}
+  NEW_RELIC_APP_NAME: ${{secrets.NEW_RELIC_APP_NAME}}
+
+jobs:
+  init:
+    name: init
+    runs-on: self-hosted
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: 'npm'
+
+      - name: cache node_modules
+        id: cache-node-modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: node-modules-${{ hashFiles('package-lock.json') }}
+
+      - name: installing packages
+        run: |
+          npm config set @demoorg:registry=https://npm.pkg.github.com
+          npm config set "//npm.pkg.github.com/:_authToken" ${{ secrets.GH_NPM_TOKEN }}
+          npm ci
+
+  build:
+    name: build
+    needs: init
+    runs-on: self-hosted
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v3
+      - name: cache node_modules
+        id: cache-node-modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: node-modules-${{ hashFiles('package-lock.json') }}
+
+      - name: building project
+        run: |
+          npm run build
+
+  lint:
+    name: lint
+    needs: init
+    runs-on: self-hosted
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v3
+      - name: cache node_modules
+        id: cache-node-modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: node-modules-${{ hashFiles('package-lock.json') }}
+
+      - name: linting check
+        run: npm run lint
+
+  unit-tests:
+    name: unit-tests
+    needs: build
+    runs-on: self-hosted
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v3
+      - name: cache node_modules
+        id: cache-node-modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: node-modules-${{ hashFiles('package-lock.json') }}
+
+      - name: unit tests
+        run: npm run test

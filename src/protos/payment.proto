@@ -1,0 +1,59 @@
+syntax = "proto3";
+
+package payment;
+
+service PaymentService{
+  rpc HoldProcedure(HoldMsg) returns (PaymentIdsMsg) {}
+  rpc ReleaseProcedure(OutMsg) returns (PaymentIdsMsg) {}
+  rpc ChargeProcedure(OutMsg) returns (PaymentIdsMsg) {}
+  rpc TopUpProcedure(HoldMsg) returns (PaymentIdsMsg) {}
+}
+
+enum PaymentEnum {
+  CASH = 0;
+  R_COIN = 1;
+}
+
+enum CountryEnum {
+  PK = 0;
+  SA = 1;
+}
+
+enum TransactionTypeEnum {
+  ORDER_PAYMENT = 0;
+  ORDER_TOPUP = 1;
+  TOPUP_TOPUP = 2;
+  REWARD_TOPUP = 3;
+  MOBILE_LOAD_PAYMENT = 5;
+  MOBILE_LOAD_COMMISSION = 6;
+}
+
+message Empty {}
+
+message PaymentMsg {
+  PaymentEnum paymentMethod = 1;
+  double amount = 2;
+  string subTransactionId = 3;
+  optional TransactionTypeEnum transactionType = 4;
+  optional string comment = 5;
+}
+
+message HoldMsg {
+  string account = 1;
+  CountryEnum countryCode = 3;
+  repeated PaymentMsg paymentMethods = 4;
+}
+
+message TransDescMsg {
+  string id = 1;
+  optional TransactionTypeEnum transactionType = 2;
+  optional string comment = 3;
+}
+
+message OutMsg {
+  repeated TransDescMsg transactions = 1;
+}
+
+message PaymentIdsMsg {
+  repeated string ids = 1;
+}

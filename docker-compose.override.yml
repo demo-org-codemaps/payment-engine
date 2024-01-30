@@ -1,0 +1,45 @@
+services:
+  backend:
+    container_name: ${ORDER_PAYMENT_ENGINE_SERVICE_CONTAINER_NAME}
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+#      args:
+#        GL_NPM_TOKEN:
+    volumes:
+      - .:/usr/src/app
+      - order-payment-engine-nodemodules:/usr/src/app/node_modules
+    ports:
+      - ${ORDER_PAYMENT_ENGINE_APP_PORT}:${ORDER_PAYMENT_ENGINE_APP_PORT}
+      # - 50051:5000 # GRPC external port (for bloomRPC debugging)
+      - 9221:9229 # Debug external port (for vscode debugging)
+    command: yarn run start:debug
+    env_file:
+      - .env.dev
+    networks:
+      - ${ORDER_PAYMENT_ENGINE_SERVICE_NETWORK_NAME}
+      - ${GRPC_NETWORK_NAME}
+    # depends_on:
+    #   - db
+  db:
+    container_name: ${ORDER_PAYMENT_ENGINE_DB_CONTAINER_NAME}
+    platform: linux/x86_64
+    image: mysql:5.7@sha256:9415bfb9a83752d30b6395c84dde03573eeba7b5b9c937c0e09c3e7b32c76c93
+    restart: always
+    networks:
+      - ${ORDER_PAYMENT_ENGINE_SERVICE_NETWORK_NAME}
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+      - MYSQL_DATABASE=${ORDER_PAYMENT_ENGINE_DB_NAME}
+      - MYSQL_USER=${DB_USERNAME}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+    ports:
+      - ${ORDER_PAYMENT_ENGINE_DB_PORT}:${DB_PORT}
+    volumes:
+      - order-payment-engine-mysql-db:/var/lib/mysql
+networks:
+  order-payment-engine-network:
+  grpc-network:
+volumes:
+  order-payment-engine-mysql-db:
+  order-payment-engine-nodemodules:

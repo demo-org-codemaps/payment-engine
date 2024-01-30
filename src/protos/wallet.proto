@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package wallet;
+
+service WalletService {
+    rpc CheckBalance(WalletInquiryMsg) returns (WalletBalanceMsg) {}
+  }
+
+  enum CountryEnum {
+    PK = 0;
+    SA = 1;
+  }
+  
+  message WalletInquiryMsg {
+    string retailerId = 1;
+    CountryEnum countryCode = 2;
+  }
+
+  message WalletBalanceMsg {
+    WalletInquiryMsg walletInquiry = 1;
+    double amount = 2;
+  }
+

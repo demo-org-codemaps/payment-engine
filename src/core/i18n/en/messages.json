@@ -1,0 +1,17 @@
+{
+  "UNAUTHORIZED": "You are not authorized to access this resource.",
+  "MISSING_AUTH_TOKEN": "Authentication token is missing in the request.",
+  "INVALID_TOKEN": "Token invalid.",
+  "EXPIRED_TOKEN": "Token expired.",
+  "RESOURCE_NOT_FOUND": "Sorry, we could not find the requested resource.",
+  "UNEXPECTED_ERROR": "An unexpected error has occurred, please try again after few minutes or contact",
+  "ENTITY_NOT_FOUND": "{field} not found for {id}",
+  "ALREADY_EXIST": "{field} already exist in the system.",
+  "UNEXPECTED_SERVICE_ERROR": "Other service is not behaving expectedly",
+  "VALIDATIONS": {
+    "isNotEmpty": "{field} is mandatory",
+    "isInvalid": "{field} is invalid"
+  },
+  "SUCCESS": "Operation was successful",
+  "INTERSERVICE_ERROR": "Error calling another service"
+}

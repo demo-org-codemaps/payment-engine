@@ -52,7 +52,7 @@ What things you need to install the software and how to install them :
 1. Clone the git repository
 
    ```bash
-   git clone https://github.com/retailotech/nestjs-boilerplate.git
+   git clone https://github.com/demoorg/nestjs-boilerplate.git
    ```
 
 1. Go into the project directory
