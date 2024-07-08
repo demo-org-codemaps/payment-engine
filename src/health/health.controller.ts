@@ -7,7 +7,6 @@ import { Public, Roles } from '../core';
 // @Public()
 export class HealthController {
   constructor(private readonly health: HealthCheckService) {}
-
   @Get()
   @Roles(ROLE.ADMIN)
   @HealthCheck()
